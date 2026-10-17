@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Needed to reach Supabase. The template only declares it for debug and
+         profile builds, so release builds would otherwise have no network. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- allowBackup is off so the encrypted session (whose key never leaves
+         the Android Keystore) is not restored onto another device. -->
     <application
-        android:label="findly"
+        android:label="Findly"
+        android:allowBackup="false"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,6 +30,17 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Let supabase_flutter (via app_links) handle auth deep links
+                 instead of Flutter's built-in deep linking. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- Email confirmation and password-reset links:
+                 com.findly.findly://login-callback (see AppConfig.authRedirectUrl). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.findly.findly" android:host="login-callback" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
